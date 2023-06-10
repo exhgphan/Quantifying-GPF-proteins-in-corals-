@@ -1,0 +1,33 @@
+#We want to blast GFP against P.Rus geneome. This file contains the commands 
+#Step 1: Index files from DNA sequences for BLAST
+
+makeblastdb -in P.Rus_genome.faa -dbtype prot -input_type fasta
+
+#Step 2: BLAST to find matching regions... '-query' is the gene were seaching for in the genome which is represented as the '-subject' 
+
+blastp -query gfp_protein.faa -subject P.Rus_genome.faa -out P.rus_vs_gfp.results.txt -evalue 1e-4 -outfmt 6
+
+#Step 3: Create jupyter notebook to create pandas dataframe,
+
+import pandas as pd 
+
+results = pd.read_csv("P.rus_vs_gfp.results.txt", sep= "\t", header = None)
+results.columns = ["query","subject","percent of identical matches", "length", "num of mismatch", "num of gaps", "query start", "query end", "subject start", "subject end", "evalue","bitscore"]
+results
+
+#Step 4: example code to isolate subject column to count number of GFP homolog gene copies
+
+subject_ids = results.loc[:,"subject"]
+subject_ids = list(subject_ids)
+subject_ids
+
+#Step 5:Count hits: Idenitfy the unique subjects as a list and then quanitfy
+
+unique_subject_ids = list(set(subject_ids))
+print(unique_subject_ids)
+
+number_of_subjects = len(unique_subject_ids)
+print(f"The the number of unique subjects is: {number_of_subjects}")
+
+
+
